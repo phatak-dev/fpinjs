@@ -13,7 +13,7 @@
 			else return this.value;	
 		},
 		flatMap : function(fn,context){
-			return this.map(fn,context).getOrElse(new None());
+			return this.map(fn,context).getOrElse(None());
 		},
 		orElse : function(fn,context){
 			return this.map(function(value){ return new Some(value);}).getOrElse(fn.call(context));
@@ -27,6 +27,7 @@
 	  if (None.prototype._singletonInstance ) {
           return None.prototype._singletonInstance;
        }
+      if(!(this instanceof None)) { return new None();}
       None.prototype._singletonInstance = this;
       this.toString = function(){return "None";}
 	}
@@ -37,6 +38,7 @@
 
 
 	function Some(value) {
+		if(!(this instanceof Some)) { return new Some(value);}
 		this.value = value;
 		this.toString = function() { return "Some(" + value+")"}
 	}
@@ -49,11 +51,11 @@
   	pattern :function (string) {
   		try {
   			var pattern = new RegExp(string);
-  			return new Some(pattern);
+  			return Some(pattern);
   		}
   		catch(e){
   			println("###logging"+e);
-  			return new None();
+  			return None();
   		}
   	},
 
@@ -72,7 +74,7 @@
   				var fn = function(value)	{
   					return r1(value) && r2(value);
   				};
-  				return new Some(fn);
+  				return Some(fn);
   			});
   		});
 
@@ -83,36 +85,36 @@
 
 
   //main
-  var someOption = new Some(10);
+  var someOption = Some(10);
   println("square the option " + someOption.map(function(value){  	
   	return value*2;}));
-  println("map of none is " + new None().map(function(value){value*2}));
+  println("map of none is " +  None().map(function(value){value*2}));
   println("getOrElse of Some "+ someOption.getOrElse(10))
-  println("getOrElse of None "+ new None().getOrElse(5))
+  println("getOrElse of None "+ None().getOrElse(5))
   //using flatmap to chain validation
   function validCustomerId(value){
-  	if(value > 100) return new Some(value);else return new None();
+  	if(value > 100) return Some(value);else return None();
   }
   function getCustomerFromDatabase(value){
   	println("searching in database for " + value)
-  	if(value ==101 || value == 102) return new Some("chang"); else return new None();
+  	if(value ==101 || value == 102) return Some("chang"); else return None();
   }
 
-  println("customer name for 110 " + new Some(110).flatMap(validCustomerId).
+  println("customer name for 110 " +  Some(110).flatMap(validCustomerId).
   	flatMap(getCustomerFromDatabase).getOrElse("not a valid customer"));
-  println("customer name for 101 " + new Some(101).flatMap(validCustomerId).
+  println("customer name for 101 " + Some(101).flatMap(validCustomerId).
   	flatMap(getCustomerFromDatabase).getOrElse("not a valid customer"));
-  println("customer name for 10 " + new Some(10).flatMap(validCustomerId).
+  println("customer name for 10 " + Some(10).flatMap(validCustomerId).
   	flatMap(getCustomerFromDatabase).getOrElse("not a valid customer"));
   
-  println("orElse " + new None().orElse(function(){ return new Some(20);}));
+  println("orElse " + None().orElse(function(){ return Some(20);}));
 
   //chaining functions to check
   function isPositive(value){
-  	if(value>0) return new Some(value); else return new None();
+  	if(value>0) return Some(value); else return  None();
   }
   function isZero(){  	
-  	return new Some(0);
+  	return Some(0);
   }
 
   println("do we have right number otherwise try to generate "+isPositive(-10).orElse(isZero));
