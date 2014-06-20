@@ -20,11 +20,21 @@
 		}
 	}
 
-	function None () {
-		this.value = null;
-		this.toString = function() {return "None"};
+    
+    
+
+	function None() {				
+	  if (None.prototype._singletonInstance ) {
+          return None.prototype._singletonInstance;
+       }
+      None.prototype._singletonInstance = this;
+      this.toString = function(){return "None";}
 	}
+    
+    
 	None.prototype = new Option();
+	
+
 
 	function Some(value) {
 		this.value = value;
@@ -129,7 +139,7 @@
   println("error patterns match? " +lift.bothMatch("abc*","de[").map(
     function(fn){ return fn.call(null,"abcdef")}).getOrElse(false));
 
-  
+
 
 
 })();
