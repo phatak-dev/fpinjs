@@ -66,19 +66,41 @@
   			}
   		});
   	},
-  	bothMatch: function(pat1,pat2){
+  	bothMatch: function(pat1,pat2,str){
   		var firstRegex = lift.mkMatcher(pat1);
   		var secondRegex = lift.mkMatcher(pat2);       
   		return firstRegex.flatMap(function(r1) {
-  			return secondRegex.flatMap(function(r2){
-  				var fn = function(value)	{
-  					return r1(value) && r2(value);
-  				};
-  				return Some(fn);
+  			return secondRegex.flatMap(function(r2){  				
+  				return Some(r1(str) && r2(str));
   			});
   		});
 
+  	},
+
+  	map2: function(a,b,fn,context) {
+  	   return a.flatMap(function(aValue){
+  	   	 return b.flatMap(function(bValue){  	   	 	
+  	   	 	  return Some(fn(aValue,bValue));	
+  	   	 	});
+  	   	 });  	  
+  	},
+
+  	bothMatch_2 : function(pat1,pat2,str){
+  		return lift.map2(lift.mkMatcher(pat1),lift.mkMatcher(pat2),function(r1,r2){
+  			return r1(str) && r2(str);
+  		});
+  	},
+  	sequence : function(optionArray){
+  		var length = optionArray.length;  		
+  		var valueArray = [];
+  		for (var i=0;i<length;i++){
+  			var option = optionArray[i];
+  			if(option instanceof None) return None();  			
+  			valueArray.push(option.value);
+  		}  		
+  		return Some(valueArray);
   	}
+
 
   }
 
@@ -131,17 +153,17 @@
   var matched = regex.map(function(fn){return fn.call(null,"abc")});
   println("matched "+matched.getOrElse(false));
 
-  //two regex match
-  var doubleRegex = lift.bothMatch("abc*","def$");
-  println("double match "+doubleRegex.map(
-  	function(fn){return fn.call(null,"abcdef")}));
-  println("double match "+doubleRegex.map(
-  	function(fn){return fn.call(null,"abcdf")}));
+  //two regex match  
+  println("regex matches abcdef? " +lift.bothMatch("abc*","def$","abcdef").getOrElse(false));
+  println("bothMatch match dce? "+lift.bothMatch("abc*","def$","dce").getOrElse(false));
+  println("bothMatch match error pattern? "+lift.bothMatch("abc*","de[","dce").getOrElse(false));
 
-  println("error patterns match? " +lift.bothMatch("abc*","de[").map(
-    function(fn){ return fn.call(null,"abcdef")}).getOrElse(false));
+  println("bothmatch_2 regex matches abcdef? " +lift.bothMatch_2("abc*","def$","abcdef").getOrElse(false));
+  println("bothmatch_2 match dce? "+lift.bothMatch_2("abc*","def$","dce").getOrElse(false));
+  println("bothmatch_2  match error pattern? "+lift.bothMatch_2("abc*","de[","dce").getOrElse(false));
 
-
+  println(lift.sequence([Some(5),Some(6)]).getOrElse([]));
+  println(lift.sequence([Some(5),Some(6),None()]).getOrElse([]));
 
 
 })();
