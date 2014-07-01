@@ -38,6 +38,11 @@
  		return this.foldRight(new Empty(),(function(value,t){
  			return new Cons(fn.call(context,value),t);
  		}))
+ 	},
+ 	filter : function(fn,context) {
+ 		return this.foldRight(new Empty(),(function(value,t){
+           if(fn.call(context,value)) return new Cons(value,t); else return t();
+ 		}))
  	}
 
  }
@@ -84,11 +89,10 @@ var numberStream =  new Cons(function(){println("five");return 5},
 var take2 = numberStream.take(3);
 var mapped = take2.map(function(value){ return value*5;});
 var mapAgain = mapped.map(function(value){return value*6;});
+var filtered = mapped.filter(function(value){ return value%2==0;});
 println(mapped.toList());
 println(mapAgain.toList());
 println(take2.toList());
-
-
-
+println(filtered.toList());
 
 })();	
