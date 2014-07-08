@@ -49,10 +49,6 @@
   	return {'_1':{'_1':first._1,'_2':second._1},'_2':second._2};
   }
 
-
- 
-
-  
   
   var rng = new Simple(10);
   println(rng.nextInt()._1);
