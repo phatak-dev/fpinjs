@@ -1,4 +1,4 @@
-(function randomNumberGenerator(){
+module.exports = (function randomNumberGenerator(){
   var println = console.log;
   function RNG() {   
   }
@@ -58,5 +58,11 @@
   println(new Simple(30).double()._1);  
   println(new Simple(40).intDouble()._1);  
   println(new Simple(50).ints(10));
+
+  //exports for node
+  return {
+  	RNG : RNG,
+  	Simple : Simple
+  }
 
 })()
